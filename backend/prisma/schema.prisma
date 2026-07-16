@@ -11,3 +11,49 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  SUPER_ADMIN
+  HR_MANAGER
+  EMPLOYEE
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  employees User[]
+
+  @@map("departments")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  password     String
+  name         String
+  phone        String?
+  designation  String
+  salary       Float
+  joiningDate  DateTime    @default(now())
+  status       Status      @default(ACTIVE)
+  role         Role        @default(EMPLOYEE)
+  profileImage String?
+  isDeleted    Boolean     @default(false)
+  
+  // relation to department table
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id])
+  
+  // for org hierarchy
+  managerId    String?
+  manager      User?       @relation("EmployeeManager", fields: [managerId], references: [id])
+  reportees    User[]      @relation("EmployeeManager")
+
+  @@map("users")
+  // ensures the PostgresSQL table is created as user instead of 'model User'
+}

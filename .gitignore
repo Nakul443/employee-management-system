@@ -26,6 +26,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Prisma (if applicable)
-/server/prisma/sqlite.db
-/server/prisma/dev.db
+# Prisma
+# Keep the migrations directory (Do NOT add it here)
+# Ignore generated client and local database files
+/src/generated/prisma/
+/prisma/sqlite.db
+/prisma/dev.db
