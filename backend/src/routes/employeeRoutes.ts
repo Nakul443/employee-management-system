@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
     });
 });
 
+// GET /api/employees/:id - get employee by ID
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     res.json({ message: `Get employee with ID ${id}` });

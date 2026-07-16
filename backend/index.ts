@@ -1,10 +1,17 @@
 import express, { type Request, type Response } from 'express';
 import prisma from './src/models/prismaClient.js';
+import authRoutes from './src/routes/authRoutes.js';
+import employeeRoutes from './src/routes/employeeRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+
+// registering API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // Health check endpoint
 app.get('/health', async (req: Request, res: Response) => {

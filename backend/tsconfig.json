@@ -40,5 +40,8 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
+  },
+  "paths": {
+    "prisma/config": ["./node_modules/home/me/projects/EMS/backend/node_modules/prisma"]
   }
 }
