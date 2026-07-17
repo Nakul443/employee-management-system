@@ -3,6 +3,19 @@
 import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
 
+async function isReportee(targetId: string, employeeId: string): Promise<boolean> {
+    const directReports = await prisma.user.findMany({
+        where: { managerId: employeeId },
+        select: { id: true }
+    });
+
+    for (const reportee of directReports) {
+        if (reportee.id === targetId) return true;
+        if (await isReportee(targetId, reportee.id)) return true;
+    }
+    return false;
+}
+
 export const getEmployees = async (req: Request, res: Response) => {
     const { name, email, department, role, status, sortBy } = req.query;
     try {
@@ -24,7 +37,8 @@ export const getEmployees = async (req: Request, res: Response) => {
 
 export const getEmployeeById = async (req: Request, res: Response) => {
     try {
-        const employee = await prisma.user.findUnique({ where: { id: req.params.id as any}, include: { department: true } });
+        const id = req.params.id as string;
+        const employee = await prisma.user.findUnique({ where: { id }, include: { department: true } });
         if (!employee) return res.status(404).json({ message: 'Employee not found' });
         res.json(employee);
     } catch (error) {
@@ -43,7 +57,8 @@ export const createEmployee = async (req: Request, res: Response) => {
 
 export const updateEmployee = async (req: Request, res: Response) => {
     try {
-        const employee = await prisma.user.update({ where: { id: req.params.id as any}, data: req.body });
+        const id = req.params.id as string;
+        const employee = await prisma.user.update({ where: { id }, data: req.body });
         res.json(employee);
     } catch (error) {
         res.status(500).json({ message: 'Error updating employee', error });
@@ -52,7 +67,8 @@ export const updateEmployee = async (req: Request, res: Response) => {
 
 export const deleteEmployee = async (req: Request, res: Response) => {
     try {
-        await prisma.user.update({ where: { id: req.params.id as any}, data: { isDeleted: true } });
+        const id = req.params.id as string;
+        await prisma.user.update({ where: { id }, data: { isDeleted: true } });
         res.json({ message: 'Employee soft-deleted' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting employee', error });
@@ -61,8 +77,9 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
 export const getReportees = async (req: Request, res: Response) => {
     try {
+        const id = req.params.id as string;
         const employee = await prisma.user.findUnique({
-            where: { id: req.params.id as any},
+            where: { id },
             include: { reportees: true }
         });
         res.json(employee?.reportees || []);
@@ -72,10 +89,20 @@ export const getReportees = async (req: Request, res: Response) => {
 };
 
 export const updateManager = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const { managerId } = req.body;
+
     try {
-        const { managerId } = req.body;
+        if (id === managerId) {
+            return res.status(400).json({ message: 'An employee cannot be their own manager' });
+        }
+
+        if (managerId && (await isReportee(managerId, id))) {
+            return res.status(400).json({ message: 'Circular dependency: Cannot assign a subordinate as a manager' });
+        }
+
         const employee = await prisma.user.update({
-            where: { id: req.params.id as any},
+            where: { id },
             data: { managerId }
         });
         res.json(employee);
