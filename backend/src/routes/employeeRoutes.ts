@@ -14,6 +14,18 @@ router.get('/', (req, res) => {
     });
 });
 
+// GET /api/employees/:id/reportees - get direct reports for a specific employee
+router.get('/:id/reportees', (req, res) => {
+    const { id } = req.params;
+    res.json({ message: `Get direct reports for employee ${id}` });
+});
+
+// PATCH /api/employees/:id/manager - assign or update reporting manager
+router.patch('/:id/manager', (req, res) => {
+    const { id } = req.params;
+    res.json({ message: `Update reporting manager for employee ${id}` });
+});
+
 // GET /api/employees/:id - get employee by ID
 router.get('/:id', (req, res) => {
     const { id } = req.params;
@@ -27,12 +39,12 @@ router.post('/', (req, res) => {
 
 // PUT /api/employees/:id - update
 router.put('/:id', (req, res) => {
-    res.json({ message: 'Update employee' });
+    res.json({ message: `Update employee ${req.params.id}` });
 });
 
 // DELETE /api/employees/:id - delete
 router.delete('/:id', (req, res) => {
-    res.json({ message: 'Delete employee' });
+    res.json({ message: `Delete employee ${req.params.id}` });
 });
 
 export default router;
