@@ -1,3 +1,5 @@
+// routes for employee management
+
 import { Router } from 'express';
 import { getEmployees, getReportees, updateManager, getEmployeeById, createEmployee, updateEmployee, deleteEmployee } from '../controllers/employeeController.js';
 

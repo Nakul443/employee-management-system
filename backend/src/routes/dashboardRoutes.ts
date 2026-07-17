@@ -1,3 +1,5 @@
+// dashboard metrics routes
+
 import { Router } from 'express';
 import { getDashboardMetrics } from '../controllers/dashboardController.js';
 

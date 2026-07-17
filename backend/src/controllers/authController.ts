@@ -1,3 +1,5 @@
+// logic for login and logout
+
 import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';

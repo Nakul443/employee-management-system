@@ -1,3 +1,5 @@
+// logic for employee management (CRUD operations)
+
 import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
 

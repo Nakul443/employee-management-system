@@ -1,3 +1,5 @@
+// routes for organisational hierarchy
+
 import { Router } from 'express';
 import { getOrgTree } from '../controllers/organisationController.js';
 

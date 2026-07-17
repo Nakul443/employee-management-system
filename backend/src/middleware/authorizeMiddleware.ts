@@ -1,4 +1,5 @@
-// validation and acceptance of roles
+// validation of roles
+
 import { type Request, type Response, type NextFunction } from 'express';
 import { type Role } from '../types/roles.js';
 
