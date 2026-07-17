@@ -2,6 +2,8 @@
 
 import { Router } from 'express';
 import { getEmployees, getReportees, updateManager, getEmployeeById, createEmployee, updateEmployee, deleteEmployee } from '../controllers/employeeController.js';
+import { employeeSchema, updateManagerSchema } from '../schemas/employeeSchema.js';
+import { validate } from '../schemas/validate.js';
 
 const router = Router();
 
@@ -13,13 +15,13 @@ router.get('/', getEmployees);
 router.get('/:id/reportees', getReportees);
 
 // PATCH /api/employees/:id/manager - assign or update reporting manager
-router.patch('/:id/manager', updateManager);
+router.patch('/:id/manager', validate(updateManagerSchema), updateManager);
 
 // GET /api/employees/:id - get employee by ID
 router.get('/:id', getEmployeeById);
 
 // POST /api/employees - create
-router.post('/', createEmployee);
+router.post('/', validate(employeeSchema), createEmployee);
 
 // PUT /api/employees/:id - update
 router.put('/:id', updateEmployee);
