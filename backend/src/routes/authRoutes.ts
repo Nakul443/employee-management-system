@@ -1,15 +1,12 @@
 import { Router } from 'express';
+import { login, logout } from '../controllers/authController.js';
 
 const router = Router();
 
 // POST /api/auth/login
-router.post('/login', (req, res) => {
-    res.json({ message: 'Login endpoint' });
-});
+router.post('/login', login);
 
 // POST /api/auth/logout
-router.post('/logout', (req, res) => {
-    res.json({ message: 'Logout endpoint' });
-});
+router.post('/logout', logout);
 
 export default router;
