@@ -4,6 +4,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import employeeRoutes from './src/routes/employeeRoutes.js';
 import { authenticate as authMiddleware } from './src/middleware/authMiddleware.js';
 import { authorize as authorizeMiddleware } from './src/middleware/authorizeMiddleware.js';
+import { Role } from './src/types/roles.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +14,7 @@ app.use(express.json());
 
 // registering API routes
 app.use('/api/auth', authRoutes); // no middleware here cuz login and logout don't require authentication
-app.use('/api/employees', authMiddleware, authorizeMiddleware, employeeRoutes);
+app.use('/api/employees', authMiddleware, authorizeMiddleware([Role.ADMIN, Role.HR]), employeeRoutes);
 
 // Health check endpoint
 app.get('/health', async (req: Request, res: Response) => {
