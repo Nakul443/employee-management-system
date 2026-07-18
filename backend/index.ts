@@ -7,6 +7,7 @@ import { authorize as authorizeMiddleware } from './src/middleware/authorizeMidd
 import { Role } from './src/types/roles.js';
 import organisationRoutes from './src/routes/organisationRoutes.js';
 import dashboardRoutes from './src/routes/dashboardRoutes.js';
+import 'dotenv/config';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -3,7 +3,7 @@
 import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
 
-export const getDashboardMetrics = async (res: Response) => {
+export const getDashboardMetrics = async (req: Request, res: Response) => { // Added req: Request
     try {
         const [total, active, inactive, departments] = await Promise.all([
             prisma.user.count({ where: { isDeleted: false } }),
