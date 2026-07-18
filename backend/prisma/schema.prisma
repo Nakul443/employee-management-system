@@ -14,7 +14,7 @@ datasource db {
 
 enum Role {
   SUPER_ADMIN
-  HR_MANAGER
+  HR
   EMPLOYEE
 }
 
@@ -47,7 +47,7 @@ model User {
   
   // relation to department table
   departmentId String?
-  department   Department  @relation(fields: [departmentId], references: [id])
+  department   Department?  @relation(fields: [departmentId], references: [id])
   
   // for org hierarchy
   managerId    String?

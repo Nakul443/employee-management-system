@@ -1,7 +1,7 @@
 // validation of roles
 
 import { type Request, type Response, type NextFunction } from 'express';
-import { type Role } from '../types/roles.js';
+import { type Role } from '../generated/prisma/client.js';
 
 export const authorize = (allowedRoles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {

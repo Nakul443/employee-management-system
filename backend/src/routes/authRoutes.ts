@@ -6,7 +6,7 @@ import { loginSchema } from '../schemas/authSchema.js';
 import { validate } from '../schemas/validate.js';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/authorizeMiddleware.js';
-import { Role } from '../types/roles.js';
+import { Role } from '../generated/prisma/client.js';
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.post('/logout', logout);
 // POST /api/auth/register
 router.post('/register', 
   authenticate, 
-  authorize([Role.ADMIN, Role.HR]),
+  authorize([Role.SUPER_ADMIN, Role.HR]),
   register
 );
 

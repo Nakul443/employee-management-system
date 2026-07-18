@@ -4,7 +4,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import employeeRoutes from './src/routes/employeeRoutes.js';
 import { authenticate as authMiddleware } from './src/middleware/authMiddleware.js';
 import { authorize as authorizeMiddleware } from './src/middleware/authorizeMiddleware.js';
-import { Role } from './src/types/roles.js';
+import { Role } from './src/generated/prisma/client.js';
 import organisationRoutes from './src/routes/organisationRoutes.js';
 import dashboardRoutes from './src/routes/dashboardRoutes.js';
 import 'dotenv/config';
@@ -14,12 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-
 // registering API routes
 app.use('/api/auth', authRoutes); // no middleware here cuz login and logout don't require authentication
-app.use('/api/employees', authMiddleware, authorizeMiddleware([Role.ADMIN, Role.HR]), employeeRoutes);
-app.use('/api/organization', authMiddleware, authorizeMiddleware([Role.ADMIN, Role.HR]), organisationRoutes);
-app.use('/api/dashboard', authMiddleware, authorizeMiddleware([Role.ADMIN, Role.HR]), dashboardRoutes);
+app.use('/api/employees', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), employeeRoutes);
+app.use('/api/organization', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), organisationRoutes);
+app.use('/api/dashboard', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), dashboardRoutes);
 
 // Health check endpoint
 app.get('/health', async (req: Request, res: Response) => {
