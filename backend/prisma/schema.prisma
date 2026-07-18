@@ -37,8 +37,8 @@ model User {
   password     String
   name         String
   phone        String?
-  designation  String
-  salary       Float
+  designation  String?
+  salary       Float?
   joiningDate  DateTime    @default(now())
   status       Status      @default(ACTIVE)
   role         Role        @default(EMPLOYEE)
@@ -46,7 +46,7 @@ model User {
   isDeleted    Boolean     @default(false)
   
   // relation to department table
-  departmentId String
+  departmentId String?
   department   Department  @relation(fields: [departmentId], references: [id])
   
   // for org hierarchy

@@ -1,9 +1,12 @@
 // login and logout routes
 
 import { Router } from 'express';
-import { login, logout } from '../controllers/authController.js';
+import { login, logout, register } from '../controllers/authController.js';
 import { loginSchema } from '../schemas/authSchema.js';
 import { validate } from '../schemas/validate.js';
+import { authenticate } from '../middleware/authMiddleware.js';
+import { authorize } from '../middleware/authorizeMiddleware.js';
+import { Role } from '../types/roles.js';
 
 const router = Router();
 
@@ -12,5 +15,12 @@ router.post('/login', validate(loginSchema), login);
 
 // POST /api/auth/logout
 router.post('/logout', logout);
+
+// POST /api/auth/register
+router.post('/register', 
+  authenticate, 
+  authorize([Role.ADMIN, Role.HR]),
+  register
+);
 
 export default router;
