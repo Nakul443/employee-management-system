@@ -6,8 +6,13 @@ import { employeeSchema, updateEmployeeSchema, updateManagerSchema } from '../sc
 import { validate } from '../schemas/validate.js';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/authorizeMiddleware.js';
+import { importEmployees } from '../controllers/employeeController.js';
+import multer from 'multer';
 
 const router = Router();
+
+const upload = multer({ dest: 'uploads/' });
+router.post('/import', authorize(['SUPER_ADMIN', 'HR']), upload.single('file'), importEmployees);
 
 // GET /api/employees - get employee list
 router.get('/', authorize(['SUPER_ADMIN', 'HR']), getEmployees);

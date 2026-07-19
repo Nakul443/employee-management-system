@@ -3,6 +3,48 @@
 import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
 import bcrypt from 'bcrypt';
+import fs from 'fs';
+import csv from 'csv-parser';
+
+export const importEmployees = async (req: Request, res: Response) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const results: any[] = [];
+    
+    fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+            try {
+                const formattedData = await Promise.all(results.map(async (row) => {
+                    const hashedPassword = await bcrypt.hash(row.password || 'Temporary123!', 10);
+                    return {
+                        email: row.email,
+                        password: hashedPassword,
+                        name: row.name,
+                        phone: row.phone || null,
+                        designation: row.designation || null,
+                        salary: row.salary ? parseFloat(row.salary) : null,
+                        joiningDate: row.joiningDate ? new Date(row.joiningDate) : new Date(),
+                        status: (row.status as any) || 'ACTIVE',
+                        role: (row.role as any) || 'EMPLOYEE',
+                        departmentId: row.departmentId ? parseInt(row.departmentId, 10) : null,
+                        managerId: row.managerId ? parseInt(row.managerId, 10) : null,
+                    };
+                }));
+
+                await prisma.user.createMany({ 
+                    data: formattedData,
+                    skipDuplicates: true 
+                });
+                
+                fs.unlinkSync(req.file!.path); // Clean up temp file
+                res.json({ message: 'Import successful', count: formattedData.length });
+            } catch (error) {
+                res.status(500).json({ message: 'Error processing CSV', error });
+            }
+        });
+};
 
 async function isReportee(targetId: number, employeeId: number): Promise<boolean> {
     const directReports = await prisma.user.findMany({
@@ -137,6 +179,7 @@ export const getReportees = async (req: Request, res: Response) => {
     }
 };
 
+// Replace your updateManager with this logic
 export const updateManager = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id as string, 10);
     const { managerId } = req.body;
@@ -146,13 +189,16 @@ export const updateManager = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'An employee cannot be their own manager' });
         }
 
-        if (managerId && (await isReportee(managerId, id))) {
-            return res.status(400).json({ message: 'Circular dependency: Cannot assign a subordinate as a manager' });
+        if (managerId !== null) {
+            const isSubordinate = await isReportee(id, managerId);
+            if (isSubordinate) {
+                return res.status(400).json({ message: 'Circular dependency: Cannot assign a subordinate as a manager' });
+            }
         }
 
         const employee = await prisma.user.update({
             where: { id },
-            data: { managerId }
+            data: { managerId: managerId ? parseInt(managerId) : null }
         });
         res.json(employee);
     } catch (error) {
