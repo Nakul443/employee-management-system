@@ -20,3 +20,7 @@ export const employeeSchema = z.object({
 export const updateManagerSchema = z.object({
   managerId: z.number().int().positive("Invalid manager ID"),
 });
+
+export const updateEmployeeSchema = employeeSchema.partial().extend({
+  password: z.string().min(6).optional(),
+});

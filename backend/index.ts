@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from 'express';
+import cors from 'cors';
 import prisma from './src/models/prismaClient.js';
 import authRoutes from './src/routes/authRoutes.js';
 import employeeRoutes from './src/routes/employeeRoutes.js';
@@ -12,11 +13,12 @@ import 'dotenv/config';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 // registering API routes
 app.use('/api/auth', authRoutes); // no middleware here cuz login and logout don't require authentication
-app.use('/api/employees', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), employeeRoutes);
+app.use('/api/employees', authMiddleware, employeeRoutes); // only verify jwt globally and allow employees to access their own data like get and all
 app.use('/api/organization', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), organisationRoutes);
 app.use('/api/dashboard', authMiddleware, authorizeMiddleware([Role.SUPER_ADMIN, Role.HR]), dashboardRoutes);
 

@@ -40,6 +40,12 @@ export const getEmployees = async (req: Request, res: Response) => {
 export const getEmployeeById = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id as string, 10);
+        const requester = req.user!; // set by authMiddleware
+
+        if (requester.role === 'EMPLOYEE' && requester.id !== id) {
+            return res.status(403).json({ message: 'Forbidden: cannot view other employee profiles' });
+        }
+
         const employee = await prisma.user.findUnique({ where: { id }, include: { department: true } });
         if (!employee) return res.status(404).json({ message: 'Employee not found' });
         res.json(employee);
@@ -74,11 +80,35 @@ export const createEmployee = async (req: Request, res: Response) => {
 export const updateEmployee = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id as string, 10);
-        if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid ID' });
+        const requester = req.user!;
+        const isSelf = requester.id === id;
+
+        if (requester.role === 'EMPLOYEE' && !isSelf) {
+            return res.status(403).json({ message: 'Forbidden: cannot edit other profiles' });
         }
-        const employee = await prisma.user.update({ where: { id }, data: req.body });
-        res.json(employee);
+
+        let data = { ...req.body };
+
+        // Employees can only touch limited fields on their own profile
+        if (requester.role === 'EMPLOYEE') {
+            const allowedFields = ['phone', 'profileImage', 'password'];
+            data = Object.fromEntries(
+                Object.entries(data).filter(([key]) => allowedFields.includes(key))
+            );
+        }
+
+        // Only SUPER_ADMIN can assign the SUPER_ADMIN role
+        if (data.role === 'SUPER_ADMIN' && requester.role !== 'SUPER_ADMIN') {
+            return res.status(403).json({ message: 'Forbidden: only Super Admin can assign Super Admin role' });
+        }
+
+        if (data.password) {
+            data.password = await bcrypt.hash(data.password, 10);
+        }
+
+        const employee = await prisma.user.update({ where: { id }, data });
+        const { password: _, ...employeeWithoutPassword } = employee;
+        res.json(employeeWithoutPassword);
     } catch (error) {
         res.status(500).json({ message: 'Error updating employee', error });
     }
