@@ -17,6 +17,7 @@ async function isReportee(targetId: number, employeeId: number): Promise<boolean
     return false;
 }
 
+// get employees
 export const getEmployees = async (req: Request, res: Response) => {
     const { name, email, department, role, status, sortBy } = req.query;
     try {
