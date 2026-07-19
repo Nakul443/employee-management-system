@@ -23,7 +23,8 @@ export const login = async (req: Request, res: Response) => {
 
         res.json({ token, user: { id: user.id, name: user.name, role: user.role } });
     } catch (error) {
-        res.status(500).json({ message: 'Login failed', error });
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Login failed', error: error instanceof Error ? error.message : error });
     }
 };
 
@@ -31,27 +32,4 @@ export const logout = (req: Request, res: Response) => {
     // If using cookies, clear them here. Otherwise, client-side handles token removal.
     res.clearCookie('token'); 
     res.json({ message: 'Logout successful' });
-};
-
-export const register = async (req: Request, res: Response) => {
-  const { email, password, name, role, designation, salary, departmentId, phone } = req.body;
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        role,
-        designation,
-        salary: parseFloat(salary), // Ensure salary is a float
-        departmentId,               // Must link to an existing Department ID
-        phone
-      }
-    });
-    res.status(201).json({ message: 'User created successfully', userId: user.id });
-  } catch (error) {
-    res.status(500).json({ message: 'Registration failed', error });
-  }
 };

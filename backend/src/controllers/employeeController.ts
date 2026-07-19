@@ -2,6 +2,7 @@
 
 import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
+import bcrypt from 'bcrypt';
 
 async function isReportee(targetId: string, employeeId: string): Promise<boolean> {
     const directReports = await prisma.user.findMany({
@@ -48,8 +49,15 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 
 export const createEmployee = async (req: Request, res: Response) => {
     try {
-        const employee = await prisma.user.create({ data: req.body });
-        res.status(201).json(employee);
+        const { password, ...rest } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const employee = await prisma.user.create({
+            data: { ...rest, password: hashedPassword }
+        });
+
+        const { password: _, ...employeeWithoutPassword } = employee;
+        res.status(201).json(employeeWithoutPassword);
     } catch (error) {
         res.status(500).json({ message: 'Error creating employee', error });
     }

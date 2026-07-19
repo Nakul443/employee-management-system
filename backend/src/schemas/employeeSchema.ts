@@ -1,7 +1,7 @@
 // contains zod schemas for validating employee creation and update
 
 import { z } from 'zod';
-import { Role } from '../types/roles.js';
+import { Role } from '../generated/prisma/client.js';
 
 export const employeeSchema = z.object({
   name: z.string().min(1, "Name is required"),
