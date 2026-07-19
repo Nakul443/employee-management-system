@@ -32,7 +32,7 @@ model Department {
 }
 
 model User {
-  id           String      @id @default(uuid())
+  id           Int      @id @default(autoincrement())
   email        String      @unique
   password     String
   name         String
@@ -50,7 +50,7 @@ model User {
   department   Department? @relation(fields: [departmentId], references: [id])
 
   // for org hierarchy
-  managerId    String?
+  managerId    Int?
   manager      User?       @relation("EmployeeManager", fields: [managerId], references: [id])
   reportees    User[]      @relation("EmployeeManager")
 

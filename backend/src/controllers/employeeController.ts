@@ -4,7 +4,7 @@ import { type Request, type Response } from 'express';
 import prisma from '../models/prismaClient.js';
 import bcrypt from 'bcrypt';
 
-async function isReportee(targetId: string, employeeId: string): Promise<boolean> {
+async function isReportee(targetId: number, employeeId: number): Promise<boolean> {
     const directReports = await prisma.user.findMany({
         where: { managerId: employeeId },
         select: { id: true }
@@ -38,7 +38,7 @@ export const getEmployees = async (req: Request, res: Response) => {
 
 export const getEmployeeById = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id as string;
+        const id = parseInt(req.params.id as string, 10);
         const employee = await prisma.user.findUnique({ where: { id }, include: { department: true } });
         if (!employee) return res.status(404).json({ message: 'Employee not found' });
         res.json(employee);
@@ -72,7 +72,10 @@ export const createEmployee = async (req: Request, res: Response) => {
 
 export const updateEmployee = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id as string;
+        const id = parseInt(req.params.id as string, 10);
+        if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid ID' });
+        }
         const employee = await prisma.user.update({ where: { id }, data: req.body });
         res.json(employee);
     } catch (error) {
@@ -82,7 +85,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
 
 export const deleteEmployee = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id as string;
+        const id = parseInt(req.params.id as string, 10);
         await prisma.user.update({ where: { id }, data: { isDeleted: true } });
         res.json({ message: 'Employee soft-deleted' });
     } catch (error) {
@@ -92,7 +95,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
 export const getReportees = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id as string;
+        const id = parseInt(req.params.id as string, 10);
         const employee = await prisma.user.findUnique({
             where: { id },
             include: { reportees: true }
@@ -104,7 +107,7 @@ export const getReportees = async (req: Request, res: Response) => {
 };
 
 export const updateManager = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const id = parseInt(req.params.id as string, 10);
     const { managerId } = req.body;
 
     try {

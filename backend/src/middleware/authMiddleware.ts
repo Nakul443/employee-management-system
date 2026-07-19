@@ -15,7 +15,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   const token = authHeader.split(' ')[1] || "";
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as unknown as { id: string; role: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as unknown as { id: number; role: string };
     req.user = decoded;
     next();
   } catch (error) {
