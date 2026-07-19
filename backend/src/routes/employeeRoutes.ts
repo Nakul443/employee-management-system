@@ -28,7 +28,12 @@ router.patch('/:id/manager',
 router.get('/:id', getEmployeeById);
 
 // POST /api/employees - create
-router.post('/', authenticate, authorize(['SUPER_ADMIN', 'HR']), validate(employeeSchema), createEmployee);
+router.post('/',
+  authenticate,
+  authorize(['SUPER_ADMIN', 'HR']),
+  validate(employeeSchema),
+  createEmployee
+);
 
 // PUT /api/employees/:id - update
 router.put('/:id', updateEmployee);
