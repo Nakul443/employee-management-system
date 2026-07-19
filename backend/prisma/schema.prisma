@@ -24,8 +24,9 @@ enum Status {
 }
 
 model Department {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   name      String   @unique
+  employees User[]
 
   @@map("departments")
 }
@@ -43,12 +44,15 @@ model User {
   role         Role        @default(EMPLOYEE)
   profileImage String?
   isDeleted    Boolean     @default(false)
-  
+
   // relation to department table
-  departmentId String?    @relation(fields: [departmentId], references: [id])
-  
+  departmentId Int?
+  department   Department? @relation(fields: [departmentId], references: [id])
+
   // for org hierarchy
-  managerId    String?    @relation("EmployeeManager", fields: [managerId], references: [id])
+  managerId    String?
+  manager      User?       @relation("EmployeeManager", fields: [managerId], references: [id])
+  reportees    User[]      @relation("EmployeeManager")
 
   @@map("users")
   // ensures the PostgresSQL table is created as user instead of 'model User'

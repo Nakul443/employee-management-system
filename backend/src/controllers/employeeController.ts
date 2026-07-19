@@ -23,7 +23,7 @@ export const getEmployees = async (req: Request, res: Response) => {
         const where: any = { isDeleted: false };
         if (name) where.name = { contains: name as string, mode: 'insensitive' };
         if (email) where.email = { contains: email as string, mode: 'insensitive' };
-        if (department) where.departmentId = department as string;
+        if (department) where.departmentId = parseInt(department as string, 10);
         if (role) where.role = role as any;
         if (status) where.status = status as any;
 
@@ -58,8 +58,15 @@ export const createEmployee = async (req: Request, res: Response) => {
 
         const { password: _, ...employeeWithoutPassword } = employee;
         res.status(201).json(employeeWithoutPassword);
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating employee', error });
+    } catch (error: any) { 
+        // Log to terminal for your debugging
+        console.error("Prisma Error:", error); 
+        
+        // Return the actual error message to Postman
+        res.status(500).json({ 
+            message: 'Error creating employee', 
+            error: error.message || "Unknown error" 
+        });
     }
 };
 
