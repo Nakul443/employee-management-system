@@ -61,7 +61,13 @@ async function isReportee(targetId: number, employeeId: number): Promise<boolean
 
 // get employees
 export const getEmployees = async (req: Request, res: Response) => {
-    const { name, email, department, role, status, sortBy } = req.query;
+    const { name, email, department, role, status, sortBy, page = '1', limit = '10' } = req.query;
+    
+    // Convert query parameters to numbers
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const skip = (pageNum - 1) * limitNum;
+
     try {
         const where: any = { isDeleted: false };
         if (name) where.name = { contains: name as string, mode: 'insensitive' };
@@ -72,8 +78,27 @@ export const getEmployees = async (req: Request, res: Response) => {
 
         const orderBy: any = sortBy === 'joiningDate' ? { joiningDate: 'desc' } : { name: 'asc' };
 
-        const employees = await prisma.user.findMany({ where, orderBy, include: { department: true } });
-        res.json(employees);
+        // Use a transaction to fetch both data and total count efficiently
+        const [employees, total] = await prisma.$transaction([
+            prisma.user.findMany({ 
+                where, 
+                orderBy, 
+                skip, 
+                take: limitNum, 
+                include: { department: true } 
+            }),
+            prisma.user.count({ where })
+        ]);
+
+        res.json({ 
+            data: employees, 
+            meta: { 
+                total, 
+                page: pageNum, 
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum)
+            } 
+        });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching employees', error });
     }
