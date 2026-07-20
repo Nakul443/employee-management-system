@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
 import ManagerSelector from '../components/ManagerSelector';
 
@@ -8,7 +8,7 @@ const EmployeeList = () => {
     const [filters, setFilters] = useState({ name: '', page: 1 });
 
     // fetch employees based on current filters and pagination
-    const fetchEmployees = async () => {
+    const fetchEmployees = useCallback(async () => {
         try {
             const { data } = await api.get('/employees', { params: filters });
             setEmployees(data.data);
@@ -16,7 +16,7 @@ const EmployeeList = () => {
         } catch (error) {
             console.error("Error fetching employees", error);
         }
-    };
+    }, [filters]);
 
     const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this employee?")) {
@@ -31,7 +31,7 @@ const EmployeeList = () => {
 
     useEffect(() => {
         fetchEmployees();
-    }, [filters]);
+    }, [fetchEmployees]);
 
     return (
         <div className="employee-list-container">
