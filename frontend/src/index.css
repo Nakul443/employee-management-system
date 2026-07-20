@@ -39,3 +39,52 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
 }
+
+/* --- Responsive Layout & Dashboard Styles --- */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.app-content {
+  flex: 1;
+  padding: 20px;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+/* Media Query for Mobile Screens */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 20px;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: space-around;
+  }
+
+  .app-content {
+    padding: 10px;
+  }
+}

@@ -5,9 +5,9 @@ import Sidebar from './Sidebar';
 
 const Layout = ({ children }: { children: JSX.Element }) => {
     return (
-        <div style={{ display: 'flex' }}>
+        <div className="app-layout">
             <Sidebar />
-            <main style={{ flex: 1, padding: '20px' }}>
+            <main className="app-content">
                 {children}
             </main>
         </div>
