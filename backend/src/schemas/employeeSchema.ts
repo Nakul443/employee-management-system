@@ -15,6 +15,7 @@ export const employeeSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   role: z.nativeEnum(Role),
   managerId: z.number().int().positive().optional().nullable(),
+  profileImage: z.string().optional().nullable(),
 });
 
 export const updateManagerSchema = z.object({
