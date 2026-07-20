@@ -215,7 +215,7 @@ export const updateManager = async (req: Request, res: Response) => {
         }
 
         if (managerId !== null) {
-            const isSubordinate = await isReportee(id, managerId);
+            const isSubordinate = await isReportee(managerId, id);
             if (isSubordinate) {
                 return res.status(400).json({ message: 'Circular dependency: Cannot assign a subordinate as a manager' });
             }

@@ -10,7 +10,7 @@ import OrgChart from '../src/pages/OrgChart';
 import Layout from './components/Layout';
 import { useContext } from 'react';
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
-import Profile from '../src/pages/Profile';
+import Profile from './pages/Profile';
 
 const ThemeToggleButton = () => {
     const { theme, toggleTheme } = useContext(ThemeContext);
