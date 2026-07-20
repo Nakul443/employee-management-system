@@ -8,7 +8,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const { data } = await api.get('/dashboard/summary');
+                const { data } = await api.get('/dashboard/metrics');
                 // Format data for Recharts: array of objects
                 const chartData = [
                     { name: 'Total', value: data.totalEmployees },

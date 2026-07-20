@@ -10,6 +10,7 @@ import OrgChart from '../src/pages/OrgChart';
 import Layout from './components/Layout';
 import { useContext } from 'react';
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
+import Profile from '../src/pages/Profile';
 
 const ThemeToggleButton = () => {
     const { theme, toggleTheme } = useContext(ThemeContext);
@@ -54,6 +55,14 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <OrgChart />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Profile />
                 </Layout>
               </ProtectedRoute>
             } />

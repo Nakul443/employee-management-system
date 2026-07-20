@@ -19,7 +19,7 @@ export const employeeSchema = z.object({
 });
 
 export const updateManagerSchema = z.object({
-  managerId: z.number().int().positive("Invalid manager ID"),
+  managerId: z.number().int().positive("Invalid manager ID").nullable(),
 });
 
 export const updateEmployeeSchema = employeeSchema.partial().extend({

@@ -11,8 +11,9 @@ const ManagerSelector = ({ employeeId, currentManagerId, onUpdate }: any) => {
         api.get('/employees').then((res) => setEmployees(res.data.data));
     }, []);
 
-    const handleAssign = async (managerId: string) => {
+    const handleAssign = async (managerIdRaw: string) => {
         try {
+            const managerId = managerIdRaw === "" ? null : Number(managerIdRaw);
             await api.patch(`/employees/${employeeId}/manager`, { managerId });
             onUpdate();
             alert('Manager assigned successfully');
