@@ -9,6 +9,9 @@ const EmployeeForm = ({ employee, onSuccess }: any) => {
         salary: '', joiningDate: '', status: 'ACTIVE', role: 'EMPLOYEE'
     });
 
+    // State to hold the selected image file
+    const [profileImage, setProfileImage] = useState<File | null>(null);
+
     const validate = () => {
         if (!formData.name || !formData.email || !formData.salary || !formData.department) {
             alert("Required fields are missing.");
@@ -25,11 +28,23 @@ const EmployeeForm = ({ employee, onSuccess }: any) => {
         e.preventDefault();
         if (!validate()) return;
 
+        // Use FormData to support binary file uploads alongside text fields
+        const data = new FormData();
+        Object.keys(formData).forEach((key) => {
+            data.append(key, formData[key]);
+        });
+        
+        if (profileImage) {
+            data.append('profileImage', profileImage);
+        }
+
         try {
+            const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+
             if (employee?.id) {
-                await api.put(`/employees/${employee.id}`, formData);
+                await api.put(`/employees/${employee.id}`, data, config);
             } else {
-                await api.post('/employees', formData);
+                await api.post('/employees', data, config);
             }
             onSuccess();
         } catch (error) {
@@ -47,6 +62,20 @@ const EmployeeForm = ({ employee, onSuccess }: any) => {
             <input placeholder="Salary" value={formData.salary} onChange={e => setFormData({...formData, salary: e.target.value})} />
             <input type="date" value={formData.joiningDate} onChange={e => setFormData({...formData, joiningDate: e.target.value})} />
             
+            {/* Profile Image File Input */}
+            <div>
+                <label>Profile Image: </label>
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                            setProfileImage(e.target.files[0]);
+                        }
+                    }} 
+                />
+            </div>
+
             <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
                 <option value="EMPLOYEE">Employee</option>
                 <option value="HR">HR Manager</option>
