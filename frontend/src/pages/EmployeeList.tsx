@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import ManagerSelector from '../components/ManagerSelector';
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
     const [meta, setMeta] = useState({ total: 0, page: 1, totalPages: 1 });
     const [filters, setFilters] = useState({ name: '', page: 1 });
 
-    useEffect(() => {
-        const fetchEmployees = async () => {
+    // fetch employees based on current filters and pagination
+    const fetchEmployees = async () => {
+        try {
+            const { data } = await api.get('/employees', { params: filters });
+            setEmployees(data.data);
+            setMeta(data.meta);
+        } catch (error) {
+            console.error("Error fetching employees", error);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm("Are you sure you want to delete this employee?")) {
             try {
-                // Fetch filtered and paginated data
-                const { data } = await api.get('/employees', { params: filters });
-                setEmployees(data.data);
-                setMeta(data.meta);
+                await api.delete(`/employees/${id}`);
+                fetchEmployees();
             } catch (error) {
-                console.error("Error fetching employees", error);
+                alert("Failed to delete.");
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchEmployees();
     }, [filters]);
 
@@ -34,6 +47,8 @@ const EmployeeList = () => {
                         <th>Email</th>
                         <th>Status</th>
                         <th>Role</th>
+                        <th>Manager</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +58,16 @@ const EmployeeList = () => {
                             <td>{emp.email}</td>
                             <td>{emp.status}</td>
                             <td>{emp.role}</td>
+                            <td>
+                                <ManagerSelector 
+                                    employeeId={emp.id} 
+                                    currentManagerId={emp.managerId} 
+                                    onUpdate={fetchEmployees} 
+                                />
+                            </td>
+                            <td>
+                                <button onClick={() => handleDelete(emp.id)}>Delete</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
