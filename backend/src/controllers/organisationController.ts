@@ -10,7 +10,7 @@ export const getOrgTree = async (req: Request, res: Response) => {
         const buildTree = (managerId: string | null): any[] => {
             return allUsers
                 .filter(user => user.managerId === managerId)
-                .map(user => ({
+                .map((user:any) => ({
                     ...user,
                     reportees: buildTree(String(user.id))
                 }));

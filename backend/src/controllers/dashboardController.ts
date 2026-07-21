@@ -17,7 +17,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => { // A
             active,
             inactive,
             departmentCount: departments.length,
-            departmentBreakdown: departments.map(d => ({
+            departmentBreakdown: departments.map((d:any) => ({
                 name: d.name,
                 count: d._count.employees
             }))
