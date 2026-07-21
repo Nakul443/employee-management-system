@@ -7,6 +7,7 @@ import { getReportees } from '../controllers/employeeController.js';
 import prisma from '../models/prismaClient.js';
 import { updateManager } from '../controllers/employeeController.js';
 
+
 // Mock Prisma client and authentication middleware to focus on unit testing organizational hierarchy logic
 jest.mock('../models/prismaClient.js', () => ({
   __esModule: true,
@@ -39,7 +40,7 @@ describe('Organisation Controller & Hierarchy Tests', () => {
         { id: 3, name: 'Developer Joe', managerId: 2, designation: 'Developer' }
       ];
 
-      (prisma.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+      (prisma.user.findMany as unknown as jest.Mock).mockResolvedValue(mockUsers);
 
       const response = await request(app).get('/api/organization/tree');
 
