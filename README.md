@@ -2,6 +2,10 @@
 
 A full-stack Employee Management System with JWT authentication, role-based access control, organizational hierarchy, and a dashboard — built as part of a Full Stack Developer hiring assignment.
 
+
+# DEPLOYMENT LINK: https://employee-management-system-ylb3-mu.vercel.app/
+
+
 ## Tech Stack
 
 - **Frontend:** React.js, TypeScript
