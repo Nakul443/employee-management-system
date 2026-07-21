@@ -6,6 +6,7 @@ import ProtectedRoute from '../src/components/ProtectedRoutes';
 import Login from '../src/pages/Login';
 import Dashboard from '../src/pages/Dashboard';
 import EmployeeList from '../src/pages/EmployeeList';
+import EmployeeCreate from '../src/pages/EmployeeCreate'; // Make sure to create this page or file
 import OrgChart from '../src/pages/OrgChart';
 import Layout from './components/Layout';
 import { useContext } from 'react';
@@ -47,6 +48,14 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <EmployeeList />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/employees/new" element={
+              <ProtectedRoute>
+                <Layout>
+                  <EmployeeCreate />
                 </Layout>
               </ProtectedRoute>
             } />
