@@ -194,17 +194,15 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 export const getReportees = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id as string, 10);
-        const employee = await prisma.user.findUnique({
-            where: { id },
-            include: { reportees: true }
+        const reportees = await prisma.user.findMany({
+            where: { managerId: id, isDeleted: false }
         });
-        res.json(employee?.reportees || []);
+        res.json(reportees);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching reportees', error });
     }
 };
 
-// Replace your updateManager with this logic
 export const updateManager = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id as string, 10);
     const { managerId } = req.body;

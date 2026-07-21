@@ -72,11 +72,7 @@ describe('Organisation Controller & Hierarchy Tests', () => {
 
   describe('PATCH /api/employees/:id/manager', () => {
     it('should successfully update an employee manager when valid', async () => {
-      // Mock employee exists and target manager exists
-      (prisma.user.findUnique as jest.Mock)
-        .mockResolvedValueOnce({ id: 3, managerId: null }) // target employee
-        .mockResolvedValueOnce({ id: 2, managerId: null }); // new manager
-
+      (prisma.user.findMany as jest.Mock).mockResolvedValue([]); // no existing reports, no cycle possible
       (prisma.user.update as jest.Mock).mockResolvedValue({ id: 3, managerId: 2 });
 
       const response = await request(app)
@@ -88,18 +84,12 @@ describe('Organisation Controller & Hierarchy Tests', () => {
     });
 
     it('should prevent circular reporting (assigning reportee as manager)', async () => {
-      // Simulating a scenario where user 2 tries to make user 3 their manager, 
-      // but user 3 already reports to user 2 (or forms a loop).
-      // Based on controller logic checking reporting chains:
-      (prisma.user.findUnique as jest.Mock)
-        .mockResolvedValueOnce({ id: 2, managerId: 3 }); // user 2's current state
+      (prisma.user.findMany as jest.Mock).mockResolvedValue([{ id: 3 }]); // simulates: employee 2 already has employee 3 as a direct report
 
-      // If the controller logic validates and blocks circular loops:
       const response = await request(app)
         .patch('/api/employees/2/manager')
         .send({ managerId: 3 });
 
-      // Depending on exact controller implementation error response (400 Bad Request expected)
       expect(response.status).toBe(400);
     });
   });

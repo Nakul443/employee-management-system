@@ -16,11 +16,16 @@ jest.mock('../models/prismaClient.js', () => ({
       update: jest.fn(),
       count: jest.fn(),
     },
+    $transaction: jest.fn((queries: Promise<any>[]) => Promise.all(queries)),
   },
 }));
 
 const app = express();
 app.use(express.json());
+app.use((req: any, res, next) => {
+  req.user = { id: 1, role: 'SUPER_ADMIN' };
+  next();
+});
 
 app.get('/api/employees', getEmployees);
 app.get('/api/employees/:id', getEmployeeById);
@@ -46,7 +51,7 @@ describe('Employee Controller CRUD Tests', () => {
       const response = await request(app).get('/api/employees?search=alice&status=ACTIVE');
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body.employees || response.body)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
       expect(prisma.user.findMany).toHaveBeenCalled();
     });
   });

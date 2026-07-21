@@ -65,7 +65,7 @@ describe('Authentication & RBAC Controller Tests', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('token', 'mock-jwt-token');
-      expect(response.body.user).toHaveProperty('email', 'admin@example.com');
+      expect(response.body.user).toHaveProperty('role', 'SUPER_ADMIN');
     });
 
     it('should return 401 for non-existent email or invalid password', async () => {

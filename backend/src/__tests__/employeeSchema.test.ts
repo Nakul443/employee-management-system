@@ -2,7 +2,6 @@
 
 import { employeeSchema, updateEmployeeSchema } from '../schemas/employeeSchema.js';
 import { Role } from '../generated/prisma/client.js';
-import { describe, it } from 'node:test';
 
 describe('Employee Zod Schemas', () => {
   const validEmployeeData = {
